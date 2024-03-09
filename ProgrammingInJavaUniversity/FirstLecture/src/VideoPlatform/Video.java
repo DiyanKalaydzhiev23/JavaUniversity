@@ -63,6 +63,14 @@ public class Video {
         return this.getDuration().compareTo(video2.getDuration()) > 0;
     }
 
+    public Video getVideoWithMoreLikes(Video otherVideo) {
+        if (this.getLikes() > otherVideo.getLikes()) {
+            return this;
+        } else {
+            return otherVideo;
+        }
+    }
+
     @Override
     public String toString() {
         return "Video [name=" + name + ", duration=" + duration + ", likes]";

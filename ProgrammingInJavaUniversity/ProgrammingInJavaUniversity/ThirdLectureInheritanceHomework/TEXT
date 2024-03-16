@@ -1,0 +1,102 @@
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.regex.*;
+import java.util.stream.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.lang.Math.max;
+
+import java.util.Scanner;
+
+class Manufacturer {
+    protected final String name;
+    protected final boolean providesExtendedWarranty;
+
+    public Manufacturer(String name, boolean providesWarranty) {
+        this.name = name;
+        this.providesExtendedWarranty = providesWarranty;
+    }
+}
+
+
+class ElectricDevice {
+    private static final int addWarranty = 12;
+    protected final Manufacturer manufacturer;
+    protected final int minMonthsWarranty;
+
+    public ElectricDevice(Manufacturer manufacturer, int minMonthsWarranty) {
+        this.manufacturer = manufacturer;
+        this.minMonthsWarranty = setMinMonthsWarranty(minMonthsWarranty);
+    }
+
+    public int setMinMonthsWarranty(int minMonthsWarranty) {
+        return max(minMonthsWarranty, 6);
+    }
+
+    public int warranty() {
+        return this.minMonthsWarranty + (this.manufacturer.providesExtendedWarranty ? addWarranty : 0);
+    }
+}
+
+
+
+class WashingMachine extends ElectricDevice {
+    private static final int addWarranty = 12;
+    private final boolean hasDryFunction;
+
+    public WashingMachine(ElectricDevice electricDevice, int minMonthsWarranty, boolean hasDryFunction) {
+        super(electricDevice.manufacturer, minMonthsWarranty);
+        this.hasDryFunction = hasDryFunction;
+    }
+
+    public int warranty() {
+        return super.warranty() + (hasDryFunction ? super.minMonthsWarranty / 2 : 0);
+    }
+}
+
+
+class Cooker extends ElectricDevice {
+    private static final int addWarranty = 12;
+    private final boolean isOnGas;
+
+    public Cooker(ElectricDevice electricDevice, int minMonthsWarranty, boolean isOnGas) {
+        super(electricDevice.manufacturer, minMonthsWarranty);
+        this.isOnGas = isOnGas;
+    }
+
+    public boolean getIsOnGas() {
+        return this.isOnGas;
+    }
+
+    public int warranty() {
+        return super.warranty() + (isOnGas ? addWarranty : 0);
+    }
+}
+
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+
+        String manufacturerName = scanner.nextLine();
+        boolean givesExtraWarranty = scanner.nextInt() == 1;
+        int minMonthsWarranty = scanner.nextInt();
+        boolean isOnGas = scanner.nextInt() == 1;
+        boolean hasDryFunction = scanner.nextInt() == 1;
+
+        Manufacturer manufacturer = new Manufacturer(manufacturerName, givesExtraWarranty);
+        ElectricDevice electricDevice = new ElectricDevice(manufacturer, minMonthsWarranty);
+        Cooker cooker = new Cooker(electricDevice, minMonthsWarranty, isOnGas);
+        WashingMachine washingMachine = new WashingMachine(electricDevice, minMonthsWarranty, hasDryFunction);
+
+        System.out.println(electricDevice.warranty());
+        System.out.println(cooker.warranty());
+        System.out.println(washingMachine.warranty());
+
+        scanner.close();
+    }
+}
